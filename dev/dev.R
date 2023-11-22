@@ -54,7 +54,7 @@ devtools::build()
 usethis::use_version()
 devtools::build_readme()
 usethis::use_git()
-usethis::use_github(private=T)
+usethis::use_github(private=F)
 usethis::use_github_action() # See https://usethis.r-lib.org/reference/use_github_actions.html
 
 usethis::use_github_action_check_release()
