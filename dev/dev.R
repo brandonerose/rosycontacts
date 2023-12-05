@@ -25,7 +25,7 @@ golem::use_favicon("inst/app/www/logo.png") # path = "path/to/ico". Can be an on
 ## Add internal datasets
 ## If you have data in your package
 # usethis::use_pipe()
-usethis::use_data_raw(name = "my_dataset", open = FALSE)
+usethis::use_data_raw(name = "empty_rosycontacts", open = FALSE)
 usethis::use_test("app")
 
 usethis::use_vignette(package_name)

@@ -17,54 +17,66 @@ pkg_name<-.packageName
 pkg_version<-as.character(utils::packageVersion(.packageName))
 pkg_date<-Sys.Date()
 
-#' Columns wrappers
-#'
-#' These are convenient wrappers around
-#' `column(12, ...)`, `column(6, ...)`, `column(4, ...)`...
-#'
-#' @noRd
-#'
-#' @importFrom shiny column
-col_12 <- function(...) {
-  column(12, ...)
+drop_nas<-function (x) {
+  x[!sapply(x, is.na)]
 }
 
-#' @importFrom shiny column
-col_10 <- function(...) {
-  column(10, ...)
+grab_after_symbol<- function(vector,symbol,ifna=""){
+  x<-stringr::str_extract(vector, paste0("(?<=",symbol,").*"))
+  x[which(is.na(x))] <- ifna
+  x
 }
 
-#' @importFrom shiny column
-col_8 <- function(...) {
-  column(8, ...)
+convert_to_phone_format <- function(numbers) {
+  formatted_numbers <- character(length(numbers))  # Initialize an empty vector
+  for (i in seq_along(numbers)) {
+    current_number <- numbers[i]
+    if (nchar(current_number) != 10 || !grepl("^\\d+$", current_number)) {
+      stop("Input must be a string of 10 digits.")
+    }
+    first_part <- substr(current_number, 1, 3)
+    second_part <- substr(current_number, 4, 6)
+    remaining_part <- substr(current_number, 7, 10)
+    formatted_numbers[i] <- paste(first_part, second_part, remaining_part, sep = "-")
+  }
+  return(formatted_numbers)
+}
+get_first_longer_than_10_digit_numbers <- function(input_vector) {
+  pattern <- "\\b\\d{10,}\\b"  # Pattern for more than 10 digits
+  result <- vector(mode = "character", length = length(input_vector))
+
+  for (i in seq_along(input_vector)) {
+    match <- regmatches(input_vector[i], regexec(pattern, input_vector[i]))[[1]]
+    if (length(match) > 0) {
+      result[i] <- match
+    } else {
+      result[i] <- NA_character_
+    }
+  }
+
+  return(result)
+}
+numbers_only <- function(x) !grepl("\\D", x)
+
+wrap_string_to_lines <- function(text, max_length,spacer="") {
+  result_vector <- c()
+  n <- nchar(text)
+  start <- 1
+  end <- min(start + max_length-1, n)
+  chunk <- substr(text, start, end)
+  stringr::str_length(chunk)
+  result_vector <- c(result_vector, chunk)
+  start <- end + 1
+  while (start <= n) {
+    end <- min(start + (max_length - stringr::str_length(spacer)-1), n)
+    chunk <- paste(spacer, substr(text, start, end), sep = "")
+    stringr::str_length(chunk)
+    result_vector <- c(result_vector, chunk)
+    start <- end + 1
+  }
+  return(result_vector)
 }
 
-#' @importFrom shiny column
-col_6 <- function(...) {
-  column(6, ...)
+clean_df_of_NA <- function(df){
+  df %>% dplyr::mutate_all(~ ifelse(is.na(.), "", .))
 }
-
-
-#' @importFrom shiny column
-col_4 <- function(...) {
-  column(4, ...)
-}
-
-
-#' @importFrom shiny column
-col_3 <- function(...) {
-  column(3, ...)
-}
-
-
-#' @importFrom shiny column
-col_2 <- function(...) {
-  column(2, ...)
-}
-
-
-#' @importFrom shiny column
-col_1 <- function(...) {
-  column(1, ...)
-}
-
